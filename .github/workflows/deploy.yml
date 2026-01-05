@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_NAME: myfinance
-  DOMAIN_NAME: dvorakdavid.info
+  DOMAIN_NAME: dodgerblue-ram-205382.hostingersite.com
 
 jobs:
   deploy:
