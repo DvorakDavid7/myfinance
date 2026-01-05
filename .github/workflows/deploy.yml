@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_NAME: myfinance
-  DOMAIN_NAME: gregstrends.com
+  DOMAIN_NAME: dvorakdavid.info
 
 jobs:
   deploy:
