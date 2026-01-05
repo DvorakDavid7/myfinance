@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -37,6 +39,17 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        // create default n8n user
+        if (! DB::table('users')->where('name', 'n8n')->exists()) {
+            DB::table('users')->insert([
+                'name' => 'n8n',
+                'email' => 'n8n@n8n.com',
+                'password' => bcrypt(Str::random(32)),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
