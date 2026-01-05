@@ -44,7 +44,8 @@
             "@php artisan key:generate",
             "@php artisan migrate --force",
             "npm install",
-            "npm run build"
+            "npm run build",
+            "composer cghooks add"
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
@@ -82,6 +83,9 @@
             "@lint",
             "@types"
         ],
+        "cghooks": [
+            "vendor/bin/cghooks"
+        ],
         "update:requirements": [
             "composer bump",
             "npx npm-check-updates -u"
@@ -99,7 +103,7 @@
             },
             "pre-commit": [
                 "echo 'Running pre-commit checks...'",
-                "@check"
+                "composer check"
             ]
         }
     },
