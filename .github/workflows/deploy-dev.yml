@@ -1,0 +1,63 @@
+name: Deploy Laravel App to Dev Environment
+
+on:
+  push:
+    branches:
+      - staging
+
+env:
+  PROJECT_NAME: myfinance
+  DOMAIN_NAME: gregstrends.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --no-progress --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install NPM dependencies
+        run: npm install && npm run build
+
+      - name: Deploy to Dev server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SOURCE: "./"
+          TARGET: /home/${{ secrets.REMOTE_USER }}/domains/${{ env.DOMAIN_NAME }}/${{ env.PROJECT_NAME }}
+          EXCLUDE: "/node_modules/"
+
+      - name: Run Remote Artisan Commands
+        uses: appleboy/ssh-action@v1
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.REMOTE_HOST }}
+          port: ${{ secrets.REMOTE_PORT }}
+          username: ${{ secrets.REMOTE_USER }}
+          script: |
+            cd /home/${{ secrets.REMOTE_USER }}/domains/${{ env.DOMAIN_NAME }}/${{ env.PROJECT_NAME }}
+            php artisan migrate --force
+            php artisan db:seed
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+            cd ..
+            rm -rf public_html
+            ln -s ${{ env.PROJECT_NAME }}/public/ public_html
