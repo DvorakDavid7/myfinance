@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\BankEmailWebhookController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::post('/transaction', BankEmailWebhookController::class)->middleware('auth:sanctum');
 
 Route::get('/token/n8n', function (Request $request) {
     $user = User::where('name', 'n8n')->first();
