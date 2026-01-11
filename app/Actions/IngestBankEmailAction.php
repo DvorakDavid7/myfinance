@@ -28,7 +28,7 @@ final class IngestBankEmailAction
             : now();
 
         if (preg_match('/detaily této úhrady:\s*(.+?)\s*Částka:/s', $rawEmail, $descMatch)) {
-            $description = trim($descMatch[1]);
+            $description = mb_trim($descMatch[1]);
         } else {
             $description = 'Bank transaction';
         }
